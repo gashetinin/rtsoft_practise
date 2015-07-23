@@ -53,6 +53,12 @@
 #define I2C_2BYTERD	0x0721 /* read from 2-byte-adress*/
 #define I2C_2BYTEWR	0x0722 /* write to 2-byte-adress*/
 
+struct I2C_2BYTE
+{
+	int offset;
+	i2c_ioctl_rdwr_data msgst;
+}
+
 /* This is the structure as used in the I2C_SMBUS ioctl call */
 struct i2c_smbus_ioctl_data {
 	__u8 read_write;

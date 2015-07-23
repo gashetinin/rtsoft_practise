@@ -9,6 +9,9 @@
 #include <linux/i2c.h>
 #include <linux/i2c-dev.h>
 
+
+
+
 int main ()
 {
 	char buf[2]={0x0,0x0};
@@ -16,7 +19,9 @@ int main ()
 	
 	struct i2c_msg msg[2];
 		
-	struct i2c_ioctl_rdwr_data msgst;
+	struct I2C_2BYTE struc;
+
+	struc.offset = 0x50;
 
 	file = open("/dev/i2c-0", O_RDWR);
 	if (file < 0) {
@@ -25,7 +30,7 @@ int main ()
 	}
 
 	
-	unlocked_ioctl(file, I2C_2BYTERD, &msgst);
+	unlocked_ioctl(file, I2C_2BYTERD, &struc);
 	printf("my buffer:%d, %d\n", buf[0], buf[1]);
 
 	return 0;

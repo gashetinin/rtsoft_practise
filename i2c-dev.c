@@ -417,7 +417,7 @@ static noinline int i2cdev_ioctl_smbus(struct i2c_client *client,
 	return res;
 }
 
-static noinline int i2cdev_ioctl_rd2b(struct i2c_client *client,unsigned long arg)
+static noinline int i2cdev_ioctl_rd2b(struct i2c_client *client,unsigned long arg, int offset)
 {
 	pr_alert("Enter I2C_2BYTERD\n");
 
@@ -430,8 +430,8 @@ static noinline int i2cdev_ioctl_rd2b(struct i2c_client *client,unsigned long ar
 	struct i2c_rdwr_ioctl_data rdwr_arg;
 	i = 0;
 	/*if (at24->chip.flags & AT24_FLAG_ADDR16)
-		msgbuf[i++] = offset >> 8;
-	msgbuf[i++] = offset;*/
+		msgbuf[i++] = offset >> 8;*/
+	msgbuf[i++] = offset;
 
 	if (copy_from_user(&rdwr_arg,(struct i2c_rdwr_ioctl_data __user *)arg,sizeof(rdwr_arg)))
 		return -EFAULT;
@@ -466,7 +466,7 @@ static noinline int i2cdev_ioctl_rd2b(struct i2c_client *client,unsigned long ar
 	return -ETIMEDOUT;
 }
 
-static noinline int i2cdev_ioctl_wr2b(struct i2c_client *client,unsigned long arg)
+static noinline int i2cdev_ioctl_wr2b(struct i2c_client *client,unsigned long arg, int offset)
 {
 	pr_alert("Enter I2C_2BYTEWR\n");
 	pr_alert("Enter I2C_2BYTERD\n");
@@ -480,8 +480,8 @@ static noinline int i2cdev_ioctl_wr2b(struct i2c_client *client,unsigned long ar
 	struct i2c_rdwr_ioctl_data rdwr_arg;
 	i = 0;
 	/*if (at24->chip.flags & AT24_FLAG_ADDR16)
-		msgbuf[i++] = offset >> 8;
-	msgbuf[i++] = offset;*/
+		msgbuf[i++] = offset >> 8;*/
+	msgbuf[i++] = offset;
 
 	if (copy_from_user(&rdwr_arg,(struct i2c_rdwr_ioctl_data __user *)arg,sizeof(rdwr_arg)))
 		return -EFAULT;
@@ -587,9 +587,9 @@ static long i2cdev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		client->adapter->timeout = msecs_to_jiffies(arg * 10);
 		break;
 	case I2C_2BYTERD:
-		return i2cdev_ioctl_rd2b(client, arg);
+		return i2cdev_ioctl_rd2b(client,(I2C_2BYTE*)arg->msgst,(I2C_2BYTE*)arg->offset);
 	case I2C_2BYTEWR:
-		return i2cdev_ioctl_wr2b(client, arg);
+		return i2cdev_ioctl_wr2b(client,(I2C_2BYTE*)arg->msgst,(I2C_2BYTE*)arg->offset);
 	default:
 		/* NOTE:  returning a fault code here could cause trouble
 		 * in buggy userspace code.  Some old kernel bugs returned
